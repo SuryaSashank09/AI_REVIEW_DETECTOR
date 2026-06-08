@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Review Guardian</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-brand">
+    <div class="shield-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z"
+          fill="#2d7a3a" opacity="0.18" stroke="#2d7a3a" stroke-width="1.8"/>
+        <circle cx="12" cy="12" r="4.5" fill="none" stroke="#2d7a3a" stroke-width="1.8"/>
+        <line x1="15.2" y1="15.2" x2="18" y2="18" stroke="#2d7a3a" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-name">Review Guardian</div>
+      <div class="brand-sub" id="brandSub">AI Review Authenticity Analyzer</div>
+    </div>
+  </div>
+</div>
+
+<!-- IDLE STATE -->
+<div class="state-panel" id="idleState">
+  <div class="idle-illus">
+    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="32" r="30" fill="#f0faf1" stroke="#c8e6cc" stroke-width="1.5"/>
+      <path d="M32 12L16 20v10c0 10.5 7 20.3 16 22.7 9-2.4 16-12.2 16-22.7V20L32 12z"
+        fill="#2d7a3a" opacity="0.12" stroke="#2d7a3a" stroke-width="1.6"/>
+      <circle cx="32" cy="32" r="9" fill="none" stroke="#2d7a3a" stroke-width="1.8"/>
+      <line x1="38.4" y1="38.4" x2="44" y2="44" stroke="#2d7a3a" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <p class="idle-text">
+    Navigate to any product page on Amazon, Flipkart, Myntra, eBay, Walmart and more — then click <strong>Analyze Reviews</strong>.
+  </p>
+  <button class="btn-primary" id="analyzeBtn">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    Analyze Reviews
+  </button>
+</div>
+
+<!-- LOADING STATE -->
+<div class="state-panel hidden" id="loadingState">
+  <div class="loading-wrap">
+    <div class="loading-shield">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z"
+          fill="#2d7a3a" opacity="0.15" stroke="#2d7a3a" stroke-width="1.6"/>
+        <path d="M9 12l2 2 4-4" stroke="#2d7a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <svg class="spin" style="position:absolute;top:0;left:0;" width="56" height="56" viewBox="0 0 56 56" fill="none">
+      <circle cx="28" cy="28" r="25" stroke="#e0eae1" stroke-width="3"/>
+      <path d="M28 3 A25 25 0 0 1 53 28" stroke="#2d7a3a" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="loading-title">Analyzing Reviews…</div>
+  <div class="loading-sub">Scraping &amp; scoring with NLP engine</div>
+</div>
+
+<!-- RESULT STATE -->
+<div class="state-panel hidden" id="resultState">
+
+  <!-- Trust Card -->
+  <div class="trust-card">
+    <div class="tc-label">Trust Score</div>
+    <div class="tc-main">
+      <div class="tc-grade" id="tcGrade">—</div>
+      <div>
+        <div class="tc-score-row">
+          <span class="tc-score" id="tcScore">—</span>
+          <span class="tc-badge" id="tcBadge">—</span>
+        </div>
+        <div class="tc-desc" id="tcDesc">—</div>
+      </div>
+    </div>
+    <div class="grade-segs">
+      <div class="gs ga">A</div>
+      <div class="gs gb">B</div>
+      <div class="gs gc">C</div>
+      <div class="gs gd">D</div>
+      <div class="gs gf">F</div>
+    </div>
+    <div class="grade-pointer" id="gradePtr">▲</div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-cell">
+      <div class="stat-val" id="stTotal">—</div>
+      <div class="stat-lbl">Reviews</div>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat-cell">
+      <div class="stat-val warn" id="stSusp">—</div>
+      <div class="stat-lbl">Suspicious</div>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat-cell">
+      <div class="stat-val warn" id="stSim">—</div>
+      <div class="stat-lbl">Similar</div>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat-cell">
+      <div class="stat-val warn" id="stBot">—</div>
+      <div class="stat-lbl">Bot-like</div>
+    </div>
+  </div>
+
+  <!-- 4-Dimension Bars -->
+  <div class="metrics-box" id="dimBox">
+    <div class="dim-row">
+      <span class="dim-lbl">Linguistic Auth. <em>35%</em></span>
+      <div class="dim-bw"><div class="dim-bar" id="dLing"></div></div>
+      <span class="dim-pct" id="dLingP">—</span>
+    </div>
+    <div class="dim-row">
+      <span class="dim-lbl">Sentiment Consist. <em>20%</em></span>
+      <div class="dim-bw"><div class="dim-bar" id="dSent"></div></div>
+      <span class="dim-pct" id="dSentP">—</span>
+    </div>
+    <div class="dim-row">
+      <span class="dim-lbl">Posting Behavior <em>25%</em></span>
+      <div class="dim-bw"><div class="dim-bw"><div class="dim-bar" id="dPost"></div></div></div>
+      <span class="dim-pct" id="dPostP">—</span>
+    </div>
+    <div class="dim-row">
+      <span class="dim-lbl">Review Repetition <em>20%</em></span>
+      <div class="dim-bw"><div class="dim-bar" id="dRep"></div></div>
+      <span class="dim-pct" id="dRepP">—</span>
+    </div>
+  </div>
+
+  <!-- Flagged Reviews -->
+  <div class="box">
+    <div class="box-label">Flagged Reviews</div>
+    <div id="flaggedList"></div>
+  </div>
+
+  <!-- AI Phrases -->
+  <div class="box" id="phrasesBox">
+    <div class="box-label">AI Phrases Detected</div>
+    <div class="kw-wrap" id="phrasesList"></div>
+  </div>
+
+  <!-- Actions -->
+  <button class="btn-dark" id="detailBtn">View Full Dashboard →</button>
+  <button class="btn-outline" id="reAnalyzeBtn">Re-Analyze</button>
+
+</div>
+
+<!-- ERROR STATE -->
+<div class="state-panel hidden" id="errorState">
+  <div class="error-icon">
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" stroke="#c0392b" stroke-width="1.8" fill="#fdeced"/>
+      <line x1="12" y1="8" x2="12" y2="13" stroke="#c0392b" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="12" cy="16.5" r="1.2" fill="#c0392b"/>
+    </svg>
+  </div>
+  <div class="error-title">Analysis Failed</div>
+  <div class="error-sub" id="errorText">Something went wrong.</div>
+  <button class="btn-outline" id="retryBtn">← Try Again</button>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

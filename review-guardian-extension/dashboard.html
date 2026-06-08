@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Review Guardian – Dashboard</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:#f4f7f4;color:#1a2e1c;min-height:100vh;}
+    .sb{position:fixed;top:0;left:0;width:220px;height:100vh;background:#fff;border-right:1px solid #e0eae1;display:flex;flex-direction:column;z-index:10;}
+    .sb-brand{padding:18px 16px;border-bottom:1px solid #e0eae1;display:flex;align-items:center;gap:9px;}
+    .sb-shield{width:34px;height:34px;background:#f0faf1;border:1px solid #c8e6cc;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .sb-name{font-size:14px;font-weight:700;color:#1a2e1c;}
+    .sb-nav{padding:10px 0;flex:1;}
+    .sb-item{display:flex;align-items:center;gap:9px;padding:10px 16px;font-size:13px;font-weight:500;color:#4a6e4f;cursor:default;border-left:3px solid transparent;}
+    .sb-item.active{background:#e8f5ea;color:#1a2e1c;font-weight:600;border-left-color:#2d7a3a;}
+    .sb-foot{padding:12px 16px;border-top:1px solid #e0eae1;}
+    .sb-fi{font-size:12px;color:#6b8c70;padding:7px 0;display:flex;align-items:center;gap:8px;}
+    .main{margin-left:220px;padding:24px 28px;}
+    .top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+    .page-title{font-size:20px;font-weight:700;letter-spacing:-.3px;}
+    .prod-pill{background:#fff;border:1px solid #e0eae1;border-radius:24px;padding:5px 13px;font-size:12px;color:#3a5e3f;font-weight:500;max-width:380px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .card{background:#fff;border:1px solid #e0eae1;border-radius:13px;padding:18px 20px;}
+    .card-title{font-size:10px;font-weight:700;letter-spacing:.9px;color:#6b8c70;text-transform:uppercase;margin-bottom:14px;}
+    /* Layout grids */
+    .grid2{display:grid;grid-template-columns:1fr 260px;gap:14px;margin-bottom:14px;}
+    .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+    .grid2b{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+    /* Score card */
+    .sc-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+    .sc-grade{font-size:60px;font-weight:700;letter-spacing:-3px;line-height:1;}
+    .sc-score{font-size:26px;font-weight:700;}
+    .sc-badge{background:#e8f5ea;color:#2d7a3a;font-size:10px;font-weight:600;padding:2px 9px;border-radius:20px;border:1px solid #c8e6cc;margin-left:6px;vertical-align:middle;}
+    .sc-desc{font-size:12px;color:#6b8c70;margin-top:4px;}
+    .br-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#4a6e4f;margin-bottom:8px;}
+    .br-lbl{width:80px;flex-shrink:0;}
+    .br-wrap{flex:1;height:6px;background:#eef3ee;border-radius:3px;overflow:hidden;}
+    .br-fill{height:100%;border-radius:3px;transition:width .8s ease;}
+    .fill-g{background:linear-gradient(90deg,#56b05a,#2d7a3a);}
+    .fill-y{background:linear-gradient(90deg,#f0c060,#d48a00);}
+    .fill-r{background:linear-gradient(90deg,#e07c7c,#c0392b);}
+    .br-pct{width:32px;text-align:right;font-weight:600;font-size:12px;}
+    .grade-segs{display:flex;border-radius:6px;overflow:hidden;height:22px;margin-top:14px;}
+    .gs{flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+    .ga{background:#2d7a3a;color:#fff;}.gb{background:#5ea83c;color:#fff;}.gc{background:#e8b84b;color:#4a3a00;}.gd{background:#e07c2c;color:#fff;}.gf{background:#c0392b;color:#fff;}
+    .gp{font-size:11px;color:#1a2e1c;margin-top:3px;transition:margin-left .4s;}
+    /* 4-dim bars */
+    .dim-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+    .dim-row:last-child{margin-bottom:0;}
+    .dim-lbl{font-size:12px;color:#3a5e3f;width:175px;flex-shrink:0;}
+    .dim-lbl em{font-style:normal;font-size:10px;color:#8aaa8f;margin-left:3px;}
+    .dim-bw{flex:1;height:7px;background:#eef3ee;border-radius:3px;overflow:hidden;}
+    .dim-bar{height:100%;border-radius:3px;transition:width .8s ease;width:0;}
+    .dim-pct{font-size:12px;font-weight:600;width:28px;text-align:right;}
+    /* Sentiment */
+    .sent-item{display:flex;align-items:center;gap:9px;margin-bottom:11px;}
+    .sent-item:last-child{margin-bottom:0;}
+    .sent-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+    .sent-lbl{font-size:13px;flex:1;}
+    .sent-bw{width:70px;height:6px;background:#eef3ee;border-radius:3px;overflow:hidden;}
+    .sent-bf{height:100%;border-radius:3px;}
+    .sent-pct{font-size:13px;font-weight:600;width:32px;text-align:right;}
+    /* Stats */
+    .stat-c{background:#fff;border:1px solid #e0eae1;border-radius:11px;padding:14px 16px;}
+    .stat-v{font-size:26px;font-weight:700;color:#1a2e1c;}
+    .stat-v.warn{color:#e07c2c;}.stat-v.danger{color:#c0392b;}.stat-v.good{color:#2d7a3a;}
+    .stat-l{font-size:11px;color:#7a9e7f;margin-top:3px;}
+    /* Flagged */
+    .fi{border:1px solid #fde0e0;background:#fffbfb;border-radius:9px;padding:11px 13px;margin-bottom:9px;}
+    .fi:last-child{margin-bottom:0;}
+    .fi-head{display:flex;gap:9px;margin-bottom:6px;}
+    .fi-text{font-size:12.5px;color:#2a3e2c;font-weight:500;flex:1;line-height:1.4;}
+    .fi-badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;flex-shrink:0;align-self:flex-start;}
+    .fi-badge.low{background:#fdeced;color:#c0392b;}
+    .fi-badge.mid{background:#fef0e4;color:#c06020;}
+    .fi-badge.high{background:#e8f5ea;color:#2d7a3a;}
+    .fi-flags{margin-bottom:7px;}
+    .fi-flag{font-size:11px;color:#7a4e40;padding:1.5px 0;}
+    .fi-flag::before{content:"⚠ ";color:#e07c2c;}
+    /* fi mini dim bars */
+    .fi-dims{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:7px;}
+    .fi-dim{font-size:10.5px;color:#6b8c70;display:flex;align-items:center;gap:5px;}
+    .fi-dim-bar{flex:1;height:4px;background:#f0eae0;border-radius:2px;overflow:hidden;}
+    .fi-dim-fill{height:100%;border-radius:2px;}
+    /* Keywords */
+    .kw-wrap{display:flex;flex-wrap:wrap;gap:7px;}
+    .kw-chip{background:#f0faf1;border:1px solid #c8e6cc;color:#2d7a3a;font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px;}
+    /* Verdict */
+    .verdict-text{font-size:13px;color:#2a3e2c;line-height:1.6;}
+    /* Chart */
+    .chart-wrap{margin-top:6px;}
+    .chart-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-size:11px;color:#4a6e4f;}
+    .chart-lbl{width:46px;flex-shrink:0;text-align:right;}
+    .chart-bg{flex:1;height:16px;background:#eef3ee;border-radius:3px;overflow:hidden;}
+    .chart-fill{height:100%;border-radius:3px;transition:width .8s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;}
+    .chart-val{font-size:10px;font-weight:600;color:#fff;}
+    .no-data-msg{text-align:center;padding:60px 20px;}
+    .no-data-msg h2{font-size:19px;margin-bottom:8px;}
+    .no-data-msg p{color:#6b8c70;font-size:13px;}
+    .empty-msg{font-size:13px;color:#6b8c70;text-align:center;padding:18px 0;}
+  </style>
+</head>
+<body>
+
+<div class="sb">
+  <div class="sb-brand">
+    <div class="sb-shield">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z" fill="#2d7a3a" opacity="0.18" stroke="#2d7a3a" stroke-width="1.8"/>
+        <path d="M9 12l2 2 4-4" stroke="#2d7a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="sb-name">Review Guardian</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-item active">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+    <div class="sb-item">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      Analyze Product
+    </div>
+    <div class="sb-item">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+      True Rating
+    </div>
+    <div class="sb-item">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Suspicious Reviews
+    </div>
+    <div class="sb-item">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Review Analytics
+    </div>
+  </div>
+  <div class="sb-foot">
+    <div class="sb-fi">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+      Settings
+    </div>
+    <div class="sb-fi">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Help
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="top-bar">
+    <div class="page-title">Dashboard</div>
+    <div class="prod-pill" id="prodPill">—</div>
+  </div>
+
+  <div id="noData" class="no-data-msg" style="display:none">
+    <h2>No analysis data</h2>
+    <p>Run an analysis from the popup first, then click "View Full Dashboard".</p>
+  </div>
+
+  <div id="dash">
+    <!-- Row 1: Score card + Sentiment -->
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">Score Card</div>
+        <div class="sc-row">
+          <div class="sc-grade" id="dbGrade">—</div>
+          <div>
+            <div><span class="sc-score" id="dbScore">—</span><span class="sc-badge">/ 100</span></div>
+            <div class="sc-desc" id="dbDesc">—</div>
+          </div>
+        </div>
+        <!-- 4-Dimension bars -->
+        <div id="dbDims"></div>
+        <div class="grade-segs" style="margin-top:14px">
+          <span class="gs ga">A</span><span class="gs gb">B</span><span class="gs gc">C</span><span class="gs gd">D</span><span class="gs gf">F</span>
+        </div>
+        <div class="gp" id="dbPtr">▲</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Sentiment Analysis</div>
+        <div id="sentRows"></div>
+        <div style="margin-top:16px;border-top:1px solid #eef3ee;padding-top:14px;">
+          <div class="card-title">Overview</div>
+          <div class="br-row"><span class="br-lbl">Positive</span><div class="br-wrap"><div class="br-fill fill-g" id="db-pos"></div></div><span class="br-pct" id="db-posp">—</span></div>
+          <div class="br-row"><span class="br-lbl">Similarity</span><div class="br-wrap"><div class="br-fill fill-y" id="db-sim"></div></div><span class="br-pct" id="db-simp">—</span></div>
+          <div class="br-row"><span class="br-lbl">Bot / AI</span><div class="br-wrap"><div class="br-fill fill-r" id="db-bot"></div></div><span class="br-pct" id="db-botp">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Stats strip -->
+    <div class="grid4">
+      <div class="stat-c"><div class="stat-v" id="db-total">—</div><div class="stat-l">Reviews Analyzed</div></div>
+      <div class="stat-c"><div class="stat-v warn" id="db-susp">—</div><div class="stat-l">Suspicious Reviews</div></div>
+      <div class="stat-c"><div class="stat-v danger" id="db-bot2">—</div><div class="stat-l">Bot / AI Patterns</div></div>
+      <div class="stat-c"><div class="stat-v" id="db-sim2">—</div><div class="stat-l">Near-Duplicates</div></div>
+    </div>
+
+    <!-- Row 3: Flagged + right column -->
+    <div class="grid2b">
+      <div class="card">
+        <div class="card-title">Flagged Suspicious Reviews</div>
+        <div id="db-flagged"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card">
+          <div class="card-title">Top AI Phrases Detected</div>
+          <div class="kw-wrap" id="db-kw"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Verdict</div>
+          <p class="verdict-text" id="db-verdict">—</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Fake Activity Trend</div>
+          <div class="chart-wrap" id="db-chart"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function sb(id,pid,v){setTimeout(()=>{const el=document.getElementById(id);if(el)el.style.width=Math.min(v,100)+'%';const p=document.getElementById(pid);if(p)p.textContent=v+'%';},180);}
+
+const GRADE_META={
+  A:{desc:'Highly authentic reviews detected',color:'#2d7a3a',ptr:'9%'},
+  B:{desc:'Mostly genuine, minor concerns',color:'#2d7a3a',ptr:'28%'},
+  C:{desc:'Mixed signals — review carefully',color:'#c49a0a',ptr:'50%'},
+  D:{desc:'Many suspicious reviews detected',color:'#e07c2c',ptr:'70%'},
+  F:{desc:'Highly suspicious — mostly fake',color:'#c0392b',ptr:'90%'},
+};
+
+const params=new URLSearchParams(location.search);
+const raw=params.get('d');
+if(!raw){
+  document.getElementById('noData').style.display='block';
+  document.getElementById('dash').style.display='none';
+}else{
+  const d=JSON.parse(decodeURIComponent(raw));
+  const g=GRADE_META[d.grade]||GRADE_META['C'];
+
+  document.getElementById('prodPill').textContent=d.title||'Product Analysis';
+  document.getElementById('dbGrade').textContent=d.grade;
+  document.getElementById('dbGrade').style.color=g.color;
+  document.getElementById('dbScore').textContent=d.trustScore;
+  document.getElementById('dbDesc').textContent=g.desc;
+  document.getElementById('dbPtr').style.marginLeft=g.ptr;
+
+  // 4-dim bars
+  if(d.scores){
+    const dims=[
+      {label:'Linguistic Authenticity',weight:'35%',val:d.scores.linguistic},
+      {label:'Sentiment Consistency', weight:'20%',val:d.scores.sentiment},
+      {label:'Posting Behavior',      weight:'25%',val:d.scores.posting},
+      {label:'Review Repetition',     weight:'20%',val:d.scores.repetition},
+    ];
+    const dbDims=document.getElementById('dbDims');
+    dbDims.innerHTML=dims.map(dim=>`
+      <div class="dim-row">
+        <span class="dim-lbl">${dim.label} <em>${dim.weight}</em></span>
+        <div class="dim-bw"><div class="dim-bar" data-w="${dim.val}" style="background:${dim.val>=62?'#2d7a3a':dim.val>=44?'#d48a00':'#c0392b'}"></div></div>
+        <span class="dim-pct">${dim.val}</span>
+      </div>`).join('');
+    setTimeout(()=>dbDims.querySelectorAll('.dim-bar').forEach(el=>{el.style.width=el.dataset.w+'%';}),200);
+  }
+
+  // Overview bars
+  sb('db-pos','db-posp',d.posPct||0);
+  sb('db-sim','db-simp',d.simPct||0);
+  sb('db-bot','db-botp',d.botPct||0);
+
+  // Stats
+  document.getElementById('db-total').textContent=d.reviewCount||'—';
+  document.getElementById('db-susp').textContent=(d.suspPct||0)+'%';
+  document.getElementById('db-bot2').textContent=(d.botPct||0)+'%';
+  document.getElementById('db-sim2').textContent=(d.simPct||0)+'%';
+
+  // Sentiment
+  const sentData=[
+    {label:'Positive',pct:d.posPct||0,color:'#2d7a3a'},
+    {label:'Neutral', pct:d.neutPct||0,color:'#5ea83c'},
+    {label:'Negative',pct:d.negPct||0,color:'#c0392b'},
+  ];
+  const sentEl=document.getElementById('sentRows');
+  sentData.forEach(s=>{
+    sentEl.innerHTML+=`<div class="sent-item">
+      <div class="sent-dot" style="background:${s.color}"></div>
+      <span class="sent-lbl">${s.label}</span>
+      <div class="sent-bw"><div class="sent-bf" style="background:${s.color};width:${s.pct}%"></div></div>
+      <span class="sent-pct">${s.pct}%</span>
+    </div>`;
+  });
+
+  // Keywords
+  const kwEl=document.getElementById('db-kw');
+  if(d.topPhrases&&d.topPhrases.length){
+    d.topPhrases.forEach(p=>{kwEl.innerHTML+=`<span class="kw-chip">${esc(p)}</span>`;});
+  }else{kwEl.innerHTML='<span style="font-size:13px;color:#6b8c70">No suspicious phrases found</span>';}
+
+  // Verdict
+  document.getElementById('db-verdict').textContent=d.verdict||'—';
+
+  // Flagged
+  const flEl=document.getElementById('db-flagged');
+  if(d.flagged&&d.flagged.length){
+    d.flagged.forEach(r=>{
+      const sc=r.authScore<44?'low':r.authScore<62?'mid':'high';
+      const bc=sc==='low'?'#c0392b':sc==='mid'?'#e07c2c':'#5ea83c';
+      let dimsHtml='';
+      if(r.scores){
+        const dimNames=[['Ling.',r.scores.linguistic],['Sent.',r.scores.sentiment],['Post.',r.scores.posting],['Rep.',r.scores.repetition]];
+        dimsHtml='<div class="fi-dims">'+dimNames.map(([lbl,v])=>`<div class="fi-dim"><span style="width:28px;flex-shrink:0">${lbl}</span><div class="fi-dim-bar"><div class="fi-dim-fill" style="width:${v}%;background:${v>=62?'#2d7a3a':v>=44?'#d48a00':'#c0392b'}"></div></div><span style="width:22px;text-align:right">${v}</span></div>`).join('')+'</div>';
+      }
+      flEl.innerHTML+=`<div class="fi">
+        <div class="fi-head">
+          <div class="fi-text">${esc(r.text)}</div>
+          <span class="fi-badge ${sc}">${r.authScore}</span>
+        </div>
+        <div class="fi-flags">${(r.flags||[]).map(f=>`<div class="fi-flag">${esc(f)}</div>`).join('')}</div>
+        ${dimsHtml}
+      </div>`;
+    });
+  }else{flEl.innerHTML='<p class="empty-msg">✓ No flagged reviews found</p>';}
+
+  // Fake activity chart
+  const chartEl=document.getElementById('db-chart');
+  if(d.fakeActivityData){
+    const max=Math.max(...d.fakeActivityData.map(r=>r.value),1);
+    d.fakeActivityData.forEach(r=>{
+      const w=Math.round((r.value/max)*100);
+      const color=w>60?'#c0392b':w>35?'#e07c2c':'#d48a00';
+      chartEl.innerHTML+=`<div class="chart-row">
+        <span class="chart-lbl">${r.label}</span>
+        <div class="chart-bg"><div class="chart-fill" data-w="${w}" style="background:${color};width:0">
+          ${r.value>0?`<span class="chart-val">${r.value}%</span>`:''}
+        </div></div>
+      </div>`;
+    });
+    setTimeout(()=>chartEl.querySelectorAll('.chart-fill').forEach(el=>{el.style.width=el.dataset.w+'%';}),200);
+  }
+}
+</script>
+</body>
+</html>
