@@ -112,7 +112,3 @@ Open **http://localhost:5173**
 [Review Guardian Chrome Extension](../review-guardian-extension) — Analyze reviews directly on any product page.
 
 ---
-
-## License
-
-MIT © 2026 Review Guardian
