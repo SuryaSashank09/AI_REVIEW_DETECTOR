@@ -94,7 +94,3 @@ The extension runs the full NLP pipeline locally — no external API call for sc
 [Review Guardian Web Platform](../review-guardian-website) — Full MERN stack dashboard with MongoDB history, CSV upload, and Groq LLM explanations.
 
 ---
-
-## License
-
-MIT © 2026 Review Guardian
