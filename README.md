@@ -10,7 +10,6 @@
 [![ML Accuracy](https://img.shields.io/badge/ML%20Accuracy-71.8%25-brightgreen?style=for-the-badge&logo=python)](.)
 [![Training Data](https://img.shields.io/badge/Training%20Data-42%2C032%20Reviews-blue?style=for-the-badge&logo=databricks)](.)
 [![Chrome Extension](https://img.shields.io/badge/Chrome-Extension%20MV3-yellow?style=for-the-badge&logo=googlechrome)](.)
-[![License](https://img.shields.io/badge/License-MIT-orange?style=for-the-badge)](LICENSE)
 
 </div>
 
