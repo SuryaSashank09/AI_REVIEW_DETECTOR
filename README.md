@@ -199,7 +199,3 @@ Express API /api/analysis
 Built in 24 hours at a college hackathon. Won in our domain. 🏆
 
 ---
-
-## 📄 License
-
-MIT © 2026 Review Guardian
